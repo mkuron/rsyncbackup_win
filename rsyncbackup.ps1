@@ -64,9 +64,12 @@ Else
             Start-Process -filepath $rsync -NoNewWindow -Wait `
                 -RedirectStandardOutput "rsyncbackup.log" -RedirectStandardError "rsyncbackup_err.log" `
                 -argumentList @(
-                "-v", "--stats",                "--recursive", "--links", "--times", $checksum,
+                "-v", "--stats",
+                "--recursive", "--links", "--times", $checksum,
                 "--delete", "--delete-excluded", "--inplace",
-                "-e", "'`"$ssh`" -o passwordauthentication=no -o stricthostkeychecking=no -i `"$sshkey`" -o UserKnownHostsFile=`"$sshknown`" -F /dev/null'",                "--exclude='`$RECYCLE.BIN'",
+                "--perms", "--chmod=ugo=rwX",
+                "-e", "'`"$ssh`" -o passwordauthentication=no -o stricthostkeychecking=no -i `"$sshkey`" -o UserKnownHostsFile=`"$sshknown`" -F /dev/null'",
+                "--exclude='`$RECYCLE.BIN'",
                 "--exclude='System Volume Information'",
                 "--exclude=hiberfil.sys",
                 "--exclude=pagefile.sys",
@@ -80,11 +83,15 @@ Else
                 "--exclude='iPod Photo Cache'",
                 "--exclude='TomTom/HOME/Backup'",
                 "--exclude='AppData/Local/*'",
+                "--exclude='AppData/LocalLow/*'",
                 "--exclude=DVDRip",
                 "--exclude=Config.Msi",
                 "--exclude=`$Recycle.Bin",
                 "--exclude='* Previews.lrdata'",
                 "--exclude='MSOCache/*'",
+                "--exclude='Prefetch/*.pf'",
+                "--exclude='*.ipsw'",
+                "--exclude='*.etl'",
                 "$source/",
                 "$target/C")
         }
@@ -105,10 +112,14 @@ $shadow = get-wmiobject win32_shadowcopy
 # Send email notification
 if((Get-Item $err).length -gt 0 -Or (Get-Random -Maximum 10) -eq 0)
 {
-    $message1 = Get-Content $log | Select-Object -last 30
+    $message1 = Get-Content $log | Select-Object -last 17
     $message2 = Get-Content $err
     
     "Sending message: $message1`n`n`n$message2"
-    Send-Mailmessage `        -To $mailto `
-        -Subject "rsyncbackup $target" `        -From $mailfrom `        -Body "$message1`n`n`n$message2" `        -SmtpServer "mail"
+    Send-Mailmessage `
+        -To $mailto `
+        -Subject "rsyncbackup $target" `
+        -From $mailfrom `
+        -Body "$message1`n`n`n$message2" `
+        -SmtpServer "mail"
 }
