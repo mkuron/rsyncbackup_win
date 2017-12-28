@@ -73,6 +73,7 @@ Else
                 "--exclude='System Volume Information'",
                 "--exclude=hiberfil.sys",
                 "--exclude=pagefile.sys",
+                "--exclude=swapfile.sys",
                 "--exclude=RECYCLER",
                 "--exclude='Temp/*'",
                 "--exclude=Thumbs.db",
