@@ -76,6 +76,8 @@ Else
                 "--exclude=swapfile.sys",
                 "--exclude=RECYCLER",
                 "--exclude=Windows.old",
+                "--exclude='$Windows.~BT'",
+                "--exclude='$Windows.~WS'",
                 "--exclude='Temp/*'",
                 "--exclude=Thumbs.db",
                 "--exclude='Temporary Internet Files/*'",
